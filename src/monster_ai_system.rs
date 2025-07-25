@@ -18,7 +18,14 @@ impl<'a> System<'a> for MonsterAI {
     fn run(&mut self, data: Self::SystemData) {
         let (mut map, player_pos, mut viewshed, monster, name, mut position) = data;
 
-        for (mut viewshed, _monster, name, mut pos) in (&mut viewshed, &monster, &name, &mut position).join() {
+        for (viewshed, _monster, name, pos) in (&mut viewshed, &monster, &name, &mut position).join() {
+            let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
+
+            if distance < 1.5 {
+                console::log(&format!("{} shouts insults", name.name));
+                return;
+            }
+
             if viewshed.visible_tiles.contains(&*player_pos) {
                 console::log(&format!("{} shouts insults", name.name));
 
